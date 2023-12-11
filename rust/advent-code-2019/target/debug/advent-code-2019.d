@@ -1,0 +1,1 @@
+/mnt/c/Users/omarb/Desktop/Mine/programming/rust/advent-code-2019/target/debug/advent-code-2019: /mnt/c/Users/omarb/Desktop/Mine/programming/rust/advent-code-2019/src/main.rs /mnt/c/Users/omarb/Desktop/Mine/programming/rust/advent-code-2019/src/problem_2.rs
