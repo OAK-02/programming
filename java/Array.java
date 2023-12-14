@@ -1,9 +1,11 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.IntStream;
@@ -450,22 +452,138 @@ public class Array {
         return result;
     } 
 
-    static int maxProduct(int[] nums) {
-        int ans = nums[0];
-        for (int i = 0; i < nums.length; i++) {
-            int prod = nums[i];
-            for (int k = i + 1; k < nums.length; ++k) {
-                prod *= nums[k];
-                if (prod > ans) { ans = prod; }
-            }            
-            if (prod > ans) { ans = prod; }
+    static List<Queue<Integer>> getZerosAndNegatives(int[] nums) {
+        List<Queue<Integer>> ans = new ArrayList<>();
+        Queue<Integer> q1 = new ArrayDeque<>(); 
+        Queue<Integer> q2 = new ArrayDeque<>();
+        for (int i = 0; i < nums.length; ++i) {
+            if (nums[i] < 0) {q2.add(i);}
+            if (nums[i] == 0) {q1.add(i);}
         }
+        ans.add(q1);
+        ans.add(q2);
         return ans;
     }
 
+    static boolean matches_remain_negative_condn(Integer v1, Integer v2) {
+        return v1 != null && ( (v2 != null && v1 < v2)  || v2 == null );
+    }
+
+    static int maxProduct(int[] nums) {
+        // O(n^2) solution
+        // int ans = nums[0];
+        // for (int i = 0; i < nums.length; i++) {
+        //     int prod = nums[i];
+        //     for (int k = i + 1; k < nums.length; ++k) {
+        //         prod *= nums[k];
+        //         if (prod > ans) { ans = prod; }
+        //     }            
+        //     if (prod > ans) { ans = prod; }
+        // }
+        // return ans;
+
+        // int global_max = 0;
+        // int local_max = 0;
+        // List<Queue<Integer>> num_zeros_negatives = getZerosAndNegatives(nums);
+        // Queue<Integer> zeros = num_zeros_negatives.get(0);
+        // Queue<Integer> negatives = num_zeros_negatives.get(1);
+        // global_max = local_max = nums[0];
+        // if (global_max < 0) { negatives.remove(); }
+        // if (global_max == 0) { zeros.remove(); }
+        // for (int i = 1; i < nums.length; ++i) {
+        //     int product  = local_max * nums[i];
+        //     // here product can be >=0 or <0
+        //     // if product is < 0  and the next coming negative integer is at an index less than
+        //     // the next 0, then set the local maximum to to negative
+        //     if (product < 0 && matches_remain_negative_condn(negatives.peek(), zeros.peek()) ) {
+        //         local_max = product;
+        //     // else continue the normal way
+        //     } else {
+        //         local_max = Integer.max(nums[i], product);
+        //     }
+        //     if (nums[i] < 0) { negatives.remove(); }
+        //     if (nums[i] == 0) { zeros.remove(); }
+        //     if (local_max > global_max)
+        //         global_max = local_max;
+        // }
+        // return global_max;
+
+        // // Kadane's algorithm O(n)
+        // int local_max = 0;
+        // int local_min = 0;
+        // int global = 0;
+        // local_min = local_max = global = nums[0];
+        // for (int i = 1; i < nums.length; ++i) {
+        //     // swapping since now the max and min since
+        //     //  max > min => -1 * max < -1 * min 
+        //     if (nums[i] < 0) {
+        //         int temp = local_max;
+        //         local_max = local_min;
+        //         local_min = temp;
+        //     }
+        //     local_max = Math.max(nums[i], local_max * nums[i]);
+        //     local_min = Math.min(nums[i], local_min * nums[i]);
+        //     global = Math.max(local_max, global);
+        // }
+        // return global;
+
+        // 2 pointer solution (Note - endings always included unless either are 0)
+        int l = 0;
+        int r = 0;
+        int global = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            l = l == 0 ? 1 : l;
+            r = r == 0 ? 1 : r;
+            l *= nums[i];
+            r *= nums[i];
+            global = Math.max(global, Math.max(l, r));
+        }
+        return global;
+    }
+
     static int maxSum(int[] nums) {
-        int ans = nums[0];
+        /*
+         * -2,1,-3,4,-1,2,1,-5,4
+         * g = -2
+         * g = 1
+         * g = 1
+         */
+        int global_max = nums[0];
+        // a running optimal subproblem carrier
+        int local_max = nums[0];
+        for (int i = 1; i < nums.length; ++i) {
+            local_max = Integer.max(nums[i], local_max + nums[i]);
+            if (local_max > global_max)
+                global_max  = local_max;
+        }
+        return global_max;
+    }
+
+    static int findSubMin(int[] nums, int l, int r) {
+        int mid = 0;
+        while (l <= r) {
+            mid = (l + r) / 2;
+            if (mid == 0) {
+                return 0;
+            } else if (nums[mid - 1] > nums[mid]) {
+                return mid;
+            } else {
+                r = mid;
+            }
+        }
+        return mid;
+    }
+
+    // ans is at 0 or at the middle
+    static int findMin(int[] nums) {
+        int l = 0; 
+        int r = nums.length;
         
+        int left_min = findSubMin(nums, l, r/2);
+
+        int right_min = findSubMin(nums, r/2, r); 
+
+        return Math.min(nums[left_min], nums[right_min]);
     }
 
     public static void main(String[] args) {
@@ -485,6 +603,7 @@ public class Array {
         // System.out.println(Arrays.toString(twoSum(nums, target)));
         // int[] arr = {7,6,4,3,1};
         // System.out.println(maxProfit(arr));
-        System.out.println(maxProduct(new int[]{-2,0,-1}));
+        System.out.println(findMin(new int[]{11,13,15,17}));
+        //                                   0     3     7
     }
 }
