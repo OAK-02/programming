@@ -559,31 +559,83 @@ public class Array {
         return global_max;
     }
 
-    static int findSubMin(int[] nums, int l, int r) {
-        int mid = 0;
+    static int findMinPiv(int[] nums) {
+        // // l = 3, r = 7
+        // int mid = 0;
+        // while (l <= r) {
+        //     mid = (l + r) / 2;
+        //     if (mid > 0) {
+        //         if ((mid + 1 < nums.length - 1) && nums[mid+1] < nums[mid])
+        //             l = mid + 1;
+        //         else if (nums[mid - 1] < nums[mid])
+        //             r = mid - 1;
+        //         // mids - 1 > mid < mids + 1 || mids is at the end of the list 
+        //         else 
+        //             break;
+        //     } else
+        //         break;
+        // }
+        // return mid;
+        // [2,1]
+        //  0 1 2 3 4 5 6
+        /**
+         * l = 0, r = 6
+         * l = 4, r = 6
+         * l = 4, r = 4, piv = 5
+         * l = 4, r = 3
+         */
+        int l = 0; int r = nums.length - 1;
+        int pivIdx = 0;
         while (l <= r) {
-            mid = (l + r) / 2;
-            if (mid == 0) {
-                return 0;
-            } else if (nums[mid - 1] > nums[mid]) {
-                return mid;
-            } else {
-                r = mid;
-            }
+            int mid = (l+r) / 2;
+            if (nums[mid] > nums[pivIdx])
+                l = mid + 1;
+            // here nums[mid] < nums[pivIdx] since all elements are unique
+            else {
+                r = mid -1;
+                pivIdx = mid;
+            }    
         }
-        return mid;
+        return pivIdx;
     }
 
     // ans is at 0 or at the middle
     static int findMin(int[] nums) {
-        int l = 0; 
-        int r = nums.length;
-        
-        int left_min = findSubMin(nums, l, r/2);
-
-        int right_min = findSubMin(nums, r/2, r); 
-
-        return Math.min(nums[left_min], nums[right_min]);
+        return nums[findMinPiv(nums)];
+    }
+    /**
+     * 4,5,6,7,8,1,2,3
+     * 0 1 2 3 4 5 6 7
+     * @param nums
+     * @param target
+     * @return
+     */
+    static int searchMine(int[] nums, int target) {
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo<=hi) {
+            int mid = (lo + hi) / 2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] > target) {
+                if (nums[lo] < nums[mid]) {
+                    if (nums[lo] <= target)
+                        hi = mid - 1;
+                    else
+                        lo = mid + 1;
+                } else
+                    hi = mid - 1;
+            } else {
+                if (nums[hi] > nums[mid]) {
+                    if (nums[hi] >= target)
+                        lo = mid + 1;
+                    else
+                        hi = mid - 1;
+                }
+                else
+                    lo = mid + 1;
+            }
+        }
+        return -1;
     }
 
     public static void main(String[] args) {
@@ -603,7 +655,7 @@ public class Array {
         // System.out.println(Arrays.toString(twoSum(nums, target)));
         // int[] arr = {7,6,4,3,1};
         // System.out.println(maxProfit(arr));
-        System.out.println(findMin(new int[]{11,13,15,17}));
-        //                                   0     3     7
+        System.out.println(searchMine(new int[]{0}, 0));
+        //                                   1 2 3 4 5 6 7
     }
 }
