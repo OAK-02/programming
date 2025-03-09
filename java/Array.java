@@ -1,16 +1,11 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.Stack;
-import java.util.stream.IntStream;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class Array {
     public static boolean repeated(String s) {
@@ -638,6 +633,23 @@ public class Array {
         return -1;
     }
 
+    static int[] twoSum2(int[] numbers, int target) {
+        boolean found = false;
+        int start = 0;
+        int end = numbers.length-1;
+        int temp_sum = numbers[start] + numbers[end];
+        while(!found) {
+            if (temp_sum > target) {
+                end--;
+            }else if (temp_sum < target) {
+                start++;
+            } else {
+                found = true;
+            }
+        }
+        return new int[]{start+1, end+1};
+    }
+
     public static void main(String[] args) {
         // ListNode n1 = new ListNode(2);
         // ListNode n2 = new ListNode(-1);
@@ -655,7 +667,8 @@ public class Array {
         // System.out.println(Arrays.toString(twoSum(nums, target)));
         // int[] arr = {7,6,4,3,1};
         // System.out.println(maxProfit(arr));
-        System.out.println(searchMine(new int[]{0}, 0));
+        // System.out.println(searchMine(new int[]{0}, 0));
         //                                   1 2 3 4 5 6 7
+        System.out.println(twoSum2(new int[]{1,2,3,4}, 3));
     }
 }
